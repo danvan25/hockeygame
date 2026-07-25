@@ -12,5 +12,8 @@
     <color name="input_stroke">#3D3D3D</color>
     <color name="logout_red">#C94A4A</color>
     <color name="logout_red_pressed">#A83C3C</color>
+    <color name="status_green">#4CAF78</color>
+    <color name="status_waiting">#D6A84B</color>
+    <color name="button_disabled">#3A4654</color>
 
 </resources>

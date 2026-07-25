@@ -61,11 +61,12 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     private void hostGame() {
-        Toast.makeText(
-                this,
-                "Host Game selected",
-                Toast.LENGTH_SHORT
-        ).show();
+        Intent intent = new Intent(
+                MainMenuActivity.this,
+                HostGameActivity.class
+        );
+
+        startActivity(intent);
     }
 
     private void joinGame() {
