@@ -80,6 +80,8 @@ public class LoginActivity extends AppCompatActivity {
                 MainMenuActivity.class
         );
 
+        intent.putExtra("username", email);
+
         startActivity(intent);
         finish();
     }
