@@ -175,6 +175,7 @@ public class GameView extends View {
         puckPaint.setColor(puckColor);
     }
 
+
     @Override
     protected void onSizeChanged(
             int width,
@@ -220,7 +221,11 @@ public class GameView extends View {
                 score
         );
 
-        gameEngine.setFieldSize(width, height);
+        gameEngine.setFieldSize(
+                width,
+                height,
+                FIELD_MARGIN
+        );
         gameEngine.resetPositions();
         gameEngine.startPuck(400f,300f);
     }

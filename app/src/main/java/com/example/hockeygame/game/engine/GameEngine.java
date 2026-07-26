@@ -3,6 +3,7 @@ package com.example.hockeygame.game.engine;
 import com.example.hockeygame.game.model.Mallet;
 import com.example.hockeygame.game.model.Puck;
 import com.example.hockeygame.game.model.Score;
+import com.example.hockeygame.game.physics.PhysicsEngine;
 
 public class GameEngine {
 
@@ -13,6 +14,8 @@ public class GameEngine {
 
     private int fieldWidth;
     private int fieldHeight;
+    private final PhysicsEngine physicsEngine;
+    private float fieldMargin;
 
     public GameEngine(
             Puck puck,
@@ -24,6 +27,7 @@ public class GameEngine {
         this.topMallet = topMallet;
         this.bottomMallet = bottomMallet;
         this.score = score;
+        this.physicsEngine = new PhysicsEngine();
     }
 
     public Puck getPuck() {
@@ -42,9 +46,14 @@ public class GameEngine {
         return score;
     }
 
-    public void setFieldSize(int width, int height) {
+    public void setFieldSize(
+            int width,
+            int height,
+            float margin
+    ) {
         this.fieldWidth = width;
         this.fieldHeight = height;
+        this.fieldMargin = margin;
     }
 
     public void resetPositions() {
@@ -81,17 +90,12 @@ public class GameEngine {
     }
 
     public void update(float deltaTime) {
-        float newX =
-                puck.getX()
-                        + puck.getVelocityX() * deltaTime;
-
-        float newY =
-                puck.getY()
-                        + puck.getVelocityY() * deltaTime;
-
-        puck.setPosition(
-                newX,
-                newY
+        physicsEngine.updatePuck(
+                puck,
+                fieldWidth,
+                fieldHeight,
+                fieldMargin,
+                deltaTime
         );
     }
 }
