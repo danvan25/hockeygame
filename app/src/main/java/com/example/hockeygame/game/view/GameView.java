@@ -13,6 +13,8 @@ import androidx.core.content.ContextCompat;
 
 import com.example.hockeygame.R;
 import com.example.hockeygame.game.model.ArenaType;
+import com.example.hockeygame.game.model.Mallet;
+import com.example.hockeygame.game.model.Puck;
 
 public class GameView extends View {
 
@@ -31,14 +33,9 @@ public class GameView extends View {
 
     private ArenaType arenaType = ArenaType.ARCTIC;
 
-    private float puckX;
-    private float puckY;
-
-    private float topMalletX;
-    private float topMalletY;
-
-    private float bottomMalletX;
-    private float bottomMalletY;
+    private Puck puck;
+    private Mallet topMallet;
+    private Mallet bottomMallet;
 
     public GameView(Context context) {
         this(context, null);
@@ -202,14 +199,14 @@ public class GameView extends View {
     }
 
     private void resetObjectPositions(int width, int height) {
-        puckX = width / 2f;
-        puckY = height / 2f;
+        puck.setX(width / 2f);
+        puck.setY(height / 2f);
 
-        topMalletX = width / 2f;
-        topMalletY = height * 0.25f;
+        topMallet.setX(width / 2f);
+        topMallet.setY(height * 0.25f);
 
-        bottomMalletX = width / 2f;
-        bottomMalletY = height * 0.75f;
+        bottomMallet.setX(width / 2f);
+        bottomMallet.setY(height * 0.75f);
     }
 
     @Override
@@ -344,17 +341,17 @@ public class GameView extends View {
 
         drawMallet(
                 canvas,
-                topMalletX,
-                topMalletY,
-                malletRadius,
+                topMallet.getX(),
+                topMallet.getY(),
+                topMallet.getRadius(),
                 topMalletPaint
         );
 
         drawMallet(
                 canvas,
-                bottomMalletX,
-                bottomMalletY,
-                malletRadius,
+                bottomMallet.getX(),
+                bottomMallet.getY(),
+                bottomMallet.getRadius(),
                 bottomMalletPaint
         );
     }
@@ -406,9 +403,9 @@ public class GameView extends View {
                 Math.min(getWidth(), getHeight()) * 0.038f;
 
         canvas.drawCircle(
-                puckX,
-                puckY,
-                puckRadius,
+                puck.getX(),
+                puck.getY(),
+                puck.getRadius(),
                 puckPaint
         );
 
@@ -420,8 +417,8 @@ public class GameView extends View {
         puckOutlinePaint.setStrokeWidth(4f);
 
         canvas.drawCircle(
-                puckX,
-                puckY,
+                puck.getX(),
+                puck.getY(),
                 puckRadius,
                 puckOutlinePaint
         );
