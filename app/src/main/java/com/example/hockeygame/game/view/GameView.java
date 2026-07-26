@@ -12,9 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.example.hockeygame.R;
+import com.example.hockeygame.game.engine.GameEngine;
 import com.example.hockeygame.game.model.ArenaType;
 import com.example.hockeygame.game.model.Mallet;
 import com.example.hockeygame.game.model.Puck;
+import com.example.hockeygame.game.model.Score;
 
 public class GameView extends View {
 
@@ -33,9 +35,8 @@ public class GameView extends View {
 
     private ArenaType arenaType = ArenaType.ARCTIC;
 
-    private Puck puck;
-    private Mallet topMallet;
-    private Mallet bottomMallet;
+    private GameEngine gameEngine;
+    private long lastFrameTimeNanos;
 
     public GameView(Context context) {
         this(context, null);
@@ -195,29 +196,58 @@ public class GameView extends View {
                 height - FIELD_MARGIN
         );
 
-        resetObjectPositions(width, height);
+        initializeGameEngine(width, height);
     }
 
-    private void resetObjectPositions(int width, int height) {
-        puck.setX(width / 2f);
-        puck.setY(height / 2f);
+    private void initializeGameEngine(int width, int height) {
+        float puckRadius =
+                Math.min(width, height) * 0.038f;
 
-        topMallet.setX(width / 2f);
-        topMallet.setY(height * 0.25f);
+        float malletRadius =
+                Math.min(width, height) * 0.065f;
 
-        bottomMallet.setX(width / 2f);
-        bottomMallet.setY(height * 0.75f);
+        Puck puck = new Puck(puckRadius);
+
+        Mallet topMallet = new Mallet(malletRadius);
+        Mallet bottomMallet = new Mallet(malletRadius);
+
+        Score score = new Score();
+
+        gameEngine = new GameEngine(
+                puck,
+                topMallet,
+                bottomMallet,
+                score
+        );
+
+        gameEngine.setFieldSize(width, height);
+        gameEngine.resetPositions();
+        gameEngine.startPuck(400f,300f);
     }
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
+        long currentTimeNanos = System.nanoTime();
+
+        if (lastFrameTimeNanos != 0L && gameEngine != null) {
+            float deltaTime =
+                    (currentTimeNanos - lastFrameTimeNanos)
+                            / 1_000_000_000f;
+
+            gameEngine.update(deltaTime);
+        }
+
+        lastFrameTimeNanos = currentTimeNanos;
+
         drawField(canvas);
         drawGoals(canvas);
         drawFieldMarkings(canvas);
         drawPlayers(canvas);
         drawPuck(canvas);
+
+        postInvalidateOnAnimation();
     }
 
     private void drawField(Canvas canvas) {
@@ -336,8 +366,15 @@ public class GameView extends View {
     }
 
     private void drawPlayers(Canvas canvas) {
-        float malletRadius =
-                Math.min(getWidth(), getHeight()) * 0.065f;
+        if (gameEngine == null) {
+            return;
+        }
+
+        Mallet topMallet =
+                gameEngine.getTopMallet();
+
+        Mallet bottomMallet =
+                gameEngine.getBottomMallet();
 
         drawMallet(
                 canvas,
@@ -399,8 +436,11 @@ public class GameView extends View {
     }
 
     private void drawPuck(Canvas canvas) {
-        float puckRadius =
-                Math.min(getWidth(), getHeight()) * 0.038f;
+        if (gameEngine == null) {
+            return;
+        }
+
+        Puck puck = gameEngine.getPuck();
 
         canvas.drawCircle(
                 puck.getX(),
@@ -419,7 +459,7 @@ public class GameView extends View {
         canvas.drawCircle(
                 puck.getX(),
                 puck.getY(),
-                puckRadius,
+                puck.getRadius(),
                 puckOutlinePaint
         );
     }
