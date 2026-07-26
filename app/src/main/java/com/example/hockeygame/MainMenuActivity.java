@@ -70,11 +70,12 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     private void joinGame() {
-        Toast.makeText(
-                this,
-                "Join Game selected",
-                Toast.LENGTH_SHORT
-        ).show();
+        Intent intent = new Intent(
+                MainMenuActivity.this,
+                JoinGameActivity.class
+        );
+
+        startActivity(intent);
     }
 
     private void openStatistics() {

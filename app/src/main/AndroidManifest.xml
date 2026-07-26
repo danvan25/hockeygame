@@ -29,6 +29,10 @@
         <activity
             android:name=".HostGameActivity"
             android:exported="false" />
+        <activity
+            android:name=".JoinGameActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
