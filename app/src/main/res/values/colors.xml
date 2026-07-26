@@ -31,4 +31,12 @@
     <!-- Kiválasztott pálya kerete -->
     <color name="arena_selected_stroke">#4DA3FF</color>
 
+    <color name="arena_line">#D9E5F0</color>
+
+    <color name="top_player_mallet">#FF5252</color>
+    <color name="bottom_player_mallet">#448AFF</color>
+
+    <color name="goal_inside">#18202A</color>
+    <color name="goal_frame">#F2F5F7</color>
+
 </resources>

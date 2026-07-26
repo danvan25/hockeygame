@@ -3,14 +3,13 @@ package com.example.hockeygame;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.security.SecureRandom;
 
 public class HostGameActivity extends AppCompatActivity {
@@ -72,6 +71,7 @@ public class HostGameActivity extends AppCompatActivity {
         roomCode = generateRoomCode();
         textViewRoomCode.setText(roomCode);
         setWaitingForOpponent();
+        setOpponentConnected("Player42");
     }
 
     private void initializeListeners() {
@@ -216,27 +216,26 @@ public class HostGameActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(
-                this,
-                "Starting game on "
-                        + selectedArena.getDisplayName(),
-                Toast.LENGTH_SHORT
-        ).show();
+        Intent intent = new Intent(
+                HostGameActivity.this,
+                GameActivity.class
+        );
 
-        /*
-         * Később:
-         *
-         * Intent intent = new Intent(
-         *         HostGameActivity.this,
-         *         GameActivity.class
-         * );
-         *
-         * intent.putExtra(
-         *         "arena",
-         *         selectedArena.name()
-         * );
-         *
-         * startActivity(intent);
-         */
+        intent.putExtra(
+                GameActivity.EXTRA_ARENA_TYPE,
+                selectedArena.name()
+        );
+
+        intent.putExtra(
+                GameActivity.EXTRA_HOST_NAME,
+                "Daniel"
+        );
+
+        intent.putExtra(
+                GameActivity.EXTRA_OPPONENT_NAME,
+                textViewOpponentName.getText().toString()
+        );
+
+        startActivity(intent);
     }
 }
