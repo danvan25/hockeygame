@@ -1,4 +1,4 @@
-package com.example.hockeygame;
+package com.example.hockeygame.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.hockeygame.R;
 
 public class MainMenuActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.hockeygame;
+package com.example.hockeygame.activity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -10,6 +10,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.hockeygame.game.model.ArenaType;
+import com.example.hockeygame.R;
+
 import java.security.SecureRandom;
 
 public class HostGameActivity extends AppCompatActivity {

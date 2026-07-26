@@ -12,13 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HockeyGame">
         <activity
-            android:name=".MainMenuActivity"
+            android:name=".activity.MainMenuActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activity.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,14 +27,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HostGameActivity"
+            android:name=".activity.HostGameActivity"
             android:exported="false" />
         <activity
-            android:name=".JoinGameActivity"
+            android:name=".activity.JoinGameActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".GameActivity"
+            android:name=".activity.GameActivity"
             android:exported="false" />
     </application>
 

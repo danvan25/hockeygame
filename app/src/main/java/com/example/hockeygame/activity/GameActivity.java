@@ -1,9 +1,13 @@
-package com.example.hockeygame;
+package com.example.hockeygame.activity;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.hockeygame.game.model.ArenaType;
+import com.example.hockeygame.game.view.GameView;
+import com.example.hockeygame.R;
 
 public class GameActivity extends AppCompatActivity {
 

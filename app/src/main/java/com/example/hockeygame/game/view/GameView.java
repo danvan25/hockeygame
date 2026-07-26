@@ -1,4 +1,4 @@
-package com.example.hockeygame;
+package com.example.hockeygame.game.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,6 +10,9 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
+import com.example.hockeygame.R;
+import com.example.hockeygame.game.model.ArenaType;
 
 public class GameView extends View {
 

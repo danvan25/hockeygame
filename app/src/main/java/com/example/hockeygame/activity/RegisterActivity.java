@@ -1,4 +1,4 @@
-package com.example.hockeygame;
+package com.example.hockeygame.activity;
 
 import android.os.Bundle;
 import android.util.Patterns;
@@ -7,6 +7,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.hockeygame.R;
 
 public class RegisterActivity extends AppCompatActivity {
 

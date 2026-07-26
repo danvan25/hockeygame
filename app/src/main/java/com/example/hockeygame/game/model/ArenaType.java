@@ -1,4 +1,4 @@
-package com.example.hockeygame;
+package com.example.hockeygame.game.model;
 
 
 public enum ArenaType {
