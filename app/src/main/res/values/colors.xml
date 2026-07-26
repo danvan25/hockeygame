@@ -16,4 +16,19 @@
     <color name="status_waiting">#D6A84B</color>
     <color name="button_disabled">#3A4654</color>
 
+    <!-- Arctic Arena -->
+    <color name="arctic_field">#12304A</color>
+    <color name="arctic_puck">#FF9F43</color>
+
+    <!-- Neon Arena -->
+    <color name="neon_field">#241334</color>
+    <color name="neon_puck">#33E6D2</color>
+
+    <!-- Classic Arena -->
+    <color name="classic_field">#183D2A</color>
+    <color name="classic_puck">#FF5A5F</color>
+
+    <!-- Kiválasztott pálya kerete -->
+    <color name="arena_selected_stroke">#4DA3FF</color>
+
 </resources>

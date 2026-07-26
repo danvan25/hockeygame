@@ -5,6 +5,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,14 @@ public class HostGameActivity extends AppCompatActivity {
     private Button buttonCancelGame;
 
     private String roomCode;
+    private LinearLayout layoutArcticArena;
+    private LinearLayout layoutNeonArena;
+    private LinearLayout layoutClassicArena;
+
+    private TextView textViewSelectedArena;
+
+    private ArenaType selectedArena;
+    private boolean opponentConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +60,12 @@ public class HostGameActivity extends AppCompatActivity {
         buttonCopyCode = findViewById(R.id.buttonCopyCode);
         buttonStartGame = findViewById(R.id.buttonStartGame);
         buttonCancelGame = findViewById(R.id.buttonCancelGame);
+        layoutArcticArena = findViewById(R.id.layoutArcticArena);
+        layoutNeonArena = findViewById(R.id.layoutNeonArena);
+        layoutClassicArena = findViewById(R.id.layoutClassicArena);
+
+        textViewSelectedArena =
+                findViewById(R.id.textViewSelectedArena);
     }
 
     private void initializeLobby() {
@@ -65,6 +80,50 @@ public class HostGameActivity extends AppCompatActivity {
         buttonStartGame.setOnClickListener(view -> startGame());
 
         buttonCancelGame.setOnClickListener(view -> finish());
+        layoutArcticArena.setOnClickListener(
+                view -> selectArena(ArenaType.ARCTIC)
+        );
+
+        layoutNeonArena.setOnClickListener(
+                view -> selectArena(ArenaType.NEON)
+        );
+
+        layoutClassicArena.setOnClickListener(
+                view -> selectArena(ArenaType.CLASSIC)
+        );
+    }
+
+    private void selectArena(ArenaType arenaType) {
+        selectedArena = arenaType;
+
+        layoutArcticArena.setSelected(
+                arenaType == ArenaType.ARCTIC
+        );
+
+        layoutNeonArena.setSelected(
+                arenaType == ArenaType.NEON
+        );
+
+        layoutClassicArena.setSelected(
+                arenaType == ArenaType.CLASSIC
+        );
+
+        textViewSelectedArena.setText(
+                "Selected arena: " + arenaType.getDisplayName()
+        );
+
+        textViewSelectedArena.setTextColor(
+                getColor(R.color.status_green)
+        );
+
+        updateStartButtonState();
+    }
+
+    private void updateStartButtonState() {
+        boolean canStartGame =
+                opponentConnected && selectedArena != null;
+
+        buttonStartGame.setEnabled(canStartGame);
     }
 
     private String generateRoomCode() {
@@ -114,7 +173,9 @@ public class HostGameActivity extends AppCompatActivity {
                 getColor(R.color.status_waiting)
         );
 
-        buttonStartGame.setEnabled(false);
+        opponentConnected = false;
+
+        updateStartButtonState();
     }
 
     private void setOpponentConnected(String username) {
@@ -129,14 +190,53 @@ public class HostGameActivity extends AppCompatActivity {
                 getColor(R.color.status_green)
         );
 
-        buttonStartGame.setEnabled(true);
+        opponentConnected = true;
+
+        updateStartButtonState();
     }
 
     private void startGame() {
+        if (!opponentConnected) {
+            Toast.makeText(
+                    this,
+                    "Wait for an opponent.",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        if (selectedArena == null) {
+            Toast.makeText(
+                    this,
+                    "Please select an arena.",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
         Toast.makeText(
                 this,
-                "Game started!",
+                "Starting game on "
+                        + selectedArena.getDisplayName(),
                 Toast.LENGTH_SHORT
         ).show();
+
+        /*
+         * Később:
+         *
+         * Intent intent = new Intent(
+         *         HostGameActivity.this,
+         *         GameActivity.class
+         * );
+         *
+         * intent.putExtra(
+         *         "arena",
+         *         selectedArena.name()
+         * );
+         *
+         * startActivity(intent);
+         */
     }
 }
