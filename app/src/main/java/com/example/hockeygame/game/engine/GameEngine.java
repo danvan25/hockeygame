@@ -98,4 +98,29 @@ public class GameEngine {
                 deltaTime
         );
     }
+
+    public void setBottomMalletPosition(float x, float y) {
+        float radius = bottomMallet.getRadius();
+
+        float minimumX = fieldMargin + radius;
+        float maximumX = fieldWidth - fieldMargin - radius;
+
+        float minimumY = fieldHeight / 2f + radius;
+        float maximumY = fieldHeight - fieldMargin - radius;
+
+        float clampedX = Math.max(
+                minimumX,
+                Math.min(x, maximumX)
+        );
+
+        float clampedY = Math.max(
+                minimumY,
+                Math.min(y, maximumY)
+        );
+
+        bottomMallet.setPosition(
+                clampedX,
+                clampedY
+        );
+    }
 }

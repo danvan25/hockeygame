@@ -17,9 +17,12 @@ import com.example.hockeygame.game.model.ArenaType;
 import com.example.hockeygame.game.model.Mallet;
 import com.example.hockeygame.game.model.Puck;
 import com.example.hockeygame.game.model.Score;
+import com.example.hockeygame.game.input.SensorInputController;
+import com.example.hockeygame.game.model.Mallet;
 
 public class GameView extends View {
 
+    private final Paint debugTextPaint = new Paint();
     private static final float FIELD_MARGIN = 12f;
     private static final float FIELD_CORNER_RADIUS = 30f;
 
@@ -37,6 +40,12 @@ public class GameView extends View {
 
     private GameEngine gameEngine;
     private long lastFrameTimeNanos;
+    private SensorInputController sensorInputController;
+
+    private float sensorTiltX;
+    private float sensorTiltY;
+    private static final float MAX_TILT_DEGREES = 20f;
+    private static final float SENSOR_DEAD_ZONE = 1.5f;
 
     public GameView(Context context) {
         this(context, null);
@@ -65,9 +74,15 @@ public class GameView extends View {
 
         initializePaints();
         applyArenaColors();
+        initializeSensorInput(context);
     }
 
     private void initializePaints() {
+        debugTextPaint.setColor(Color.WHITE);
+        debugTextPaint.setTextSize(42f);
+        debugTextPaint.setAntiAlias(true);
+        debugTextPaint.setStyle(Paint.Style.FILL);
+        //------------------------
         linePaint.setColor(
                 ContextCompat.getColor(
                         getContext(),
@@ -242,6 +257,7 @@ public class GameView extends View {
                             / 1_000_000_000f;
 
             gameEngine.update(deltaTime);
+            updateBottomMalletFromSensor();
         }
 
         lastFrameTimeNanos = currentTimeNanos;
@@ -251,6 +267,20 @@ public class GameView extends View {
         drawFieldMarkings(canvas);
         drawPlayers(canvas);
         drawPuck(canvas);
+
+        canvas.drawText(
+                "Tilt X: " + String.format("%.1f", sensorTiltX),
+                40f,
+                80f,
+                debugTextPaint
+        );
+
+        canvas.drawText(
+                "Tilt Y: " + String.format("%.1f", sensorTiltY),
+                40f,
+                125f,
+                debugTextPaint
+        );
 
         postInvalidateOnAnimation();
     }
@@ -466,6 +496,116 @@ public class GameView extends View {
                 puck.getY(),
                 puck.getRadius(),
                 puckOutlinePaint
+        );
+    }
+
+    private void initializeSensorInput(Context context) {
+        sensorInputController =
+                new SensorInputController(
+                        context,
+                        (tiltX, tiltY) -> {
+                            sensorTiltX = tiltX;
+                            sensorTiltY = tiltY;
+                        }
+                );
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (sensorInputController != null) {
+            sensorInputController.start();
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (sensorInputController != null) {
+            sensorInputController.stop();
+        }
+
+        super.onDetachedFromWindow();
+    }
+
+    private void updateBottomMalletFromSensor() {
+        if (gameEngine == null) {
+            return;
+        }
+
+        float tiltX = applyDeadZone(sensorTiltX);
+        float tiltY = applyDeadZone(sensorTiltY);
+
+        float normalizedX = clamp(
+                tiltX / MAX_TILT_DEGREES,
+                -1f,
+                1f
+        );
+
+        float normalizedY = clamp(
+                tiltY / MAX_TILT_DEGREES,
+                -1f,
+                1f
+        );
+
+        Mallet bottomMallet =
+                gameEngine.getBottomMallet();
+
+        float radius =
+                bottomMallet.getRadius();
+
+        float minimumX =
+                FIELD_MARGIN + radius;
+
+        float maximumX =
+                getWidth() - FIELD_MARGIN - radius;
+
+        float minimumY =
+                getHeight() / 2f + radius;
+
+        float maximumY =
+                getHeight() - FIELD_MARGIN - radius;
+
+        float centerX =
+                (minimumX + maximumX) / 2f;
+
+        float centerY =
+                (minimumY + maximumY) / 2f;
+
+        float horizontalRange =
+                (maximumX - minimumX) / 2f;
+
+        float verticalRange =
+                (maximumY - minimumY) / 2f;
+
+        float targetX =
+                centerX + normalizedX * horizontalRange;
+
+        float targetY =
+                centerY + normalizedY * verticalRange;
+
+        gameEngine.setBottomMalletPosition(
+                targetX,
+                targetY
+        );
+    }
+
+    private float applyDeadZone(float value) {
+        if (Math.abs(value) < SENSOR_DEAD_ZONE) {
+            return 0f;
+        }
+
+        return value;
+    }
+
+    private float clamp(
+            float value,
+            float minimum,
+            float maximum
+    ) {
+        return Math.max(
+                minimum,
+                Math.min(value, maximum)
         );
     }
 }
