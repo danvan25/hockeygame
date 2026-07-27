@@ -102,6 +102,9 @@ public class GameEngine {
     }
 
     public void setBottomMalletPosition(float x, float y) {
+        float previousX = bottomMallet.getX();
+        float previousY = bottomMallet.getY();
+
         float radius = bottomMallet.getRadius();
 
         float minimumX = fieldMargin + radius;
@@ -123,6 +126,11 @@ public class GameEngine {
         bottomMallet.setPosition(
                 clampedX,
                 clampedY
+        );
+
+        bottomMallet.setVelocity(
+                clampedX - previousX,
+                clampedY - previousY
         );
     }
 }

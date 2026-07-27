@@ -112,6 +112,14 @@ public class PhysicsEngine {
                 puck.getVelocityY()
                         - 2f * velocityAlongNormal * normalY;
 
+        float malletInfluence = 18f;
+
+        newVelocityX +=
+                mallet.getVelocityX() * malletInfluence;
+
+        newVelocityY +=
+                mallet.getVelocityY() * malletInfluence;
+
         puck.setVelocity(
                 newVelocityX,
                 newVelocityY
