@@ -92,6 +92,8 @@ public class GameEngine {
     public void update(float deltaTime) {
         physicsEngine.updatePuck(
                 puck,
+                topMallet,
+                bottomMallet,
                 fieldWidth,
                 fieldHeight,
                 fieldMargin,

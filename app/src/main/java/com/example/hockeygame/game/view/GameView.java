@@ -18,7 +18,6 @@ import com.example.hockeygame.game.model.Mallet;
 import com.example.hockeygame.game.model.Puck;
 import com.example.hockeygame.game.model.Score;
 import com.example.hockeygame.game.input.SensorInputController;
-import com.example.hockeygame.game.model.Mallet;
 
 public class GameView extends View {
 
@@ -44,8 +43,15 @@ public class GameView extends View {
 
     private float sensorTiltX;
     private float sensorTiltY;
-    private static final float MAX_TILT_DEGREES = 20f;
+    private static final float MAX_TILT_DEGREES = 18f;
     private static final float SENSOR_DEAD_ZONE = 1.5f;
+    private static final float MALLET_SMOOTHING = 0.18f;
+
+    /*
+     * Az ütő maximális mozgási sebessége pixel/másodpercben.
+     * Ha még gyors, később csökkenthetjük.
+     */
+    private static final float MALLET_MAX_SPEED = 550f;
 
     public GameView(Context context) {
         this(context, null);
@@ -255,7 +261,7 @@ public class GameView extends View {
             float deltaTime =
                     (currentTimeNanos - lastFrameTimeNanos)
                             / 1_000_000_000f;
-
+            deltaTime = Math.min(deltaTime, 0.05f);
             gameEngine.update(deltaTime);
             updateBottomMalletFromSensor();
         }
@@ -548,11 +554,17 @@ public class GameView extends View {
                 1f
         );
 
+        normalizedY = -normalizedY;
+
+        /*
+         * Az X irány megfordítása.
+         * Balra döntéskor balra kell mozognia.
+         */
+
         Mallet bottomMallet =
                 gameEngine.getBottomMallet();
 
-        float radius =
-                bottomMallet.getRadius();
+        float radius = bottomMallet.getRadius();
 
         float minimumX =
                 FIELD_MARGIN + radius;
@@ -584,9 +596,23 @@ public class GameView extends View {
         float targetY =
                 centerY + normalizedY * verticalRange;
 
+        /*
+         * Nem ugrik azonnal a célhelyre,
+         * hanem fokozatosan közelít hozzá.
+         */
+        float smoothedX =
+                bottomMallet.getX()
+                        + (targetX - bottomMallet.getX())
+                        * MALLET_SMOOTHING;
+
+        float smoothedY =
+                bottomMallet.getY()
+                        + (targetY - bottomMallet.getY())
+                        * MALLET_SMOOTHING;
+
         gameEngine.setBottomMalletPosition(
-                targetX,
-                targetY
+                smoothedX,
+                smoothedY
         );
     }
 
