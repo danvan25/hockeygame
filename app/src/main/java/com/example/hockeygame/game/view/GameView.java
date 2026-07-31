@@ -143,6 +143,10 @@ public class GameView extends View {
         invalidate();
     }
 
+    public GameEngine getGameEngine() {
+        return gameEngine;
+    }
+
     private void applyArenaColors() {
         int fieldColor;
         int puckColor;

@@ -8,23 +8,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.hockeygame.game.model.ArenaType;
 import com.example.hockeygame.game.view.GameView;
 import com.example.hockeygame.R;
+import com.example.hockeygame.game.model.Score;
 
 public class GameActivity extends AppCompatActivity {
 
     public static final String EXTRA_ARENA_TYPE = "arena_type";
     public static final String EXTRA_HOST_NAME = "host_name";
     public static final String EXTRA_OPPONENT_NAME = "opponent_name";
-
     private GameView gameView;
-
     private TextView textViewTopPlayer;
     private TextView textViewBottomPlayer;
     private TextView textViewScore;
-
     private ArenaType arenaType;
+    private final Runnable scoreUpdater = new Runnable() {
+        @Override
+        public void run() {
+            updateScoreText();
 
-    private int topPlayerScore = 0;
-    private int bottomPlayerScore = 0;
+            textViewScore.postDelayed(
+                    this,
+                    100L
+            );
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +40,38 @@ public class GameActivity extends AppCompatActivity {
         initializeViews();
         readIntentData();
         initializeGame();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        textViewScore.post(scoreUpdater);
+    }
+
+    @Override
+    protected void onPause() {
+        textViewScore.removeCallbacks(scoreUpdater);
+
+        super.onPause();
+    }
+
+    private void updateScoreText() {
+        if (gameView.getGameEngine() == null) {
+            return;
+        }
+
+        Score score =
+                gameView
+                        .getGameEngine()
+                        .getScore();
+
+        String scoreText =
+                score.getHostScore()
+                        + " : "
+                        + score.getOpponentScore();
+
+        textViewScore.setText(scoreText);
     }
 
     private void initializeViews() {
@@ -92,13 +130,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void initializeGame() {
         gameView.setArenaType(arenaType);
-        updateScore();
+        updateScoreText();
     }
 
-    private void updateScore() {
-        String scoreText =
-                topPlayerScore + " : " + bottomPlayerScore;
-
-        textViewScore.setText(scoreText);
-    }
 }

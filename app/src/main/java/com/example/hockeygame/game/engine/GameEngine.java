@@ -5,6 +5,7 @@ import com.example.hockeygame.game.model.Puck;
 import com.example.hockeygame.game.model.Score;
 import com.example.hockeygame.game.physics.PhysicsEngine;
 import com.example.hockeygame.game.rules.GameRules;
+import com.example.hockeygame.game.collision.GoalResult;
 
 public class GameEngine {
 
@@ -109,7 +110,18 @@ public class GameEngine {
                 deltaTime
         );
 
-        gameRules.update(puck);
+        GoalResult goalResult =
+                gameRules.update(
+                        puck,
+                        fieldWidth,
+                        fieldHeight,
+                        fieldMargin,
+                        goalWidth
+                );
+
+        if (goalResult != GoalResult.NONE) {
+            resetAfterGoal(goalResult);
+        }
     }
 
     public void setBottomMalletPosition(float x, float y) {
@@ -143,5 +155,21 @@ public class GameEngine {
                 clampedX - previousX,
                 clampedY - previousY
         );
+    }
+
+    private void resetAfterGoal(GoalResult goalResult) {
+        resetPositions();
+
+        if (goalResult == GoalResult.TOP_GOAL) {
+            startPuck(
+                    400f,
+                    300f
+            );
+        } else if (goalResult == GoalResult.BOTTOM_GOAL) {
+            startPuck(
+                    -400f,
+                    -300f
+            );
+        }
     }
 }
