@@ -20,11 +20,9 @@ import com.example.hockeygame.game.model.Score;
 import com.example.hockeygame.game.input.SensorInputController;
 
 public class GameView extends View {
-
     private final Paint debugTextPaint = new Paint();
     private static final float FIELD_MARGIN = 12f;
     private static final float FIELD_CORNER_RADIUS = 30f;
-
     private final Paint fieldPaint;
     private final Paint linePaint;
     private final Paint puckPaint;
@@ -32,20 +30,17 @@ public class GameView extends View {
     private final Paint bottomMalletPaint;
     private final Paint goalPaint;
     private final Paint goalFramePaint;
-
     private final RectF fieldRectangle;
-
     private ArenaType arenaType = ArenaType.ARCTIC;
-
     private GameEngine gameEngine;
     private long lastFrameTimeNanos;
     private SensorInputController sensorInputController;
-
     private float sensorTiltX;
     private float sensorTiltY;
     private static final float MAX_TILT_DEGREES = 18f;
     private static final float SENSOR_DEAD_ZONE = 1.5f;
     private static final float MALLET_SMOOTHING = 0.18f;
+    private final Paint countdownPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     public GameView(Context context) {
         this(context, null);
@@ -125,6 +120,12 @@ public class GameView extends View {
 
         goalFramePaint.setStyle(Paint.Style.STROKE);
         goalFramePaint.setStrokeWidth(7f);
+
+        countdownPaint.setColor(Color.WHITE);
+        countdownPaint.setTextSize(150f);
+        countdownPaint.setTextAlign(Paint.Align.CENTER);
+        countdownPaint.setStyle(Paint.Style.FILL);
+        countdownPaint.setFakeBoldText(true);
     }
 
     public void setArenaType(ArenaType arenaType) {
@@ -141,6 +142,34 @@ public class GameView extends View {
          * az onDraw() metódust.
          */
         invalidate();
+    }
+
+    private void drawCountdown(Canvas canvas) {
+        if (gameEngine == null
+                || !gameEngine.isCountdownActive()) {
+            return;
+        }
+
+        int countdownNumber =
+                gameEngine.getCountdownNumber();
+
+        float centerX =
+                getWidth() / 2f;
+
+        Paint.FontMetrics fontMetrics =
+                countdownPaint.getFontMetrics();
+
+        float centerY =
+                getHeight() / 2f
+                        - (fontMetrics.ascent
+                        + fontMetrics.descent) / 2f;
+
+        canvas.drawText(
+                String.valueOf(countdownNumber),
+                centerX,
+                centerY,
+                countdownPaint
+        );
     }
 
     public GameEngine getGameEngine() {
@@ -246,8 +275,7 @@ public class GameView extends View {
                 FIELD_MARGIN,
                 goalWidth
         );
-        gameEngine.resetPositions();
-        gameEngine.startPuck(400f,300f);
+        gameEngine.startCountdown();
     }
 
     @Override
@@ -272,6 +300,7 @@ public class GameView extends View {
         drawFieldMarkings(canvas);
         drawPlayers(canvas);
         drawPuck(canvas);
+        drawCountdown(canvas);
 
         canvas.drawText(
                 "Tilt X: " + String.format("%.1f", sensorTiltX),

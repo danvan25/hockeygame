@@ -6,22 +6,22 @@ import com.example.hockeygame.game.model.Score;
 import com.example.hockeygame.game.physics.PhysicsEngine;
 import com.example.hockeygame.game.rules.GameRules;
 import com.example.hockeygame.game.collision.GoalResult;
+import com.example.hockeygame.game.model.GameState;
 
 public class GameEngine {
-
     private final Puck puck;
     private final Mallet topMallet;
     private final Mallet bottomMallet;
     private final Score score;
-
     private int fieldWidth;
     private int fieldHeight;
     private final PhysicsEngine physicsEngine;
     private float fieldMargin;
-
     private float goalWidth;
     private final GameRules gameRules;
-
+    private static final float COUNTDOWN_DURATION_SECONDS = 3f;
+    private GameState gameState = GameState.COUNTDOWN;
+    private float countdownRemaining = COUNTDOWN_DURATION_SECONDS;
 
     public GameEngine(
             Puck puck,
@@ -98,7 +98,22 @@ public class GameEngine {
         );
     }
 
+    public void startCountdown() {
+        resetPositions();
+
+        countdownRemaining =
+                COUNTDOWN_DURATION_SECONDS;
+
+        gameState =
+                GameState.COUNTDOWN;
+    }
+
     public void update(float deltaTime) {
+        if (gameState == GameState.COUNTDOWN) {
+            updateCountdown(deltaTime);
+            return;
+        }
+
         physicsEngine.updatePuck(
                 puck,
                 topMallet,
@@ -120,9 +135,29 @@ public class GameEngine {
                 );
 
         if (goalResult != GoalResult.NONE) {
-            resetAfterGoal(goalResult);
+            startCountdown();
         }
     }
+
+    private void updateCountdown(float deltaTime) {
+        countdownRemaining -= deltaTime;
+
+        if (countdownRemaining <= 0f) {
+            countdownRemaining = 0f;
+            gameState = GameState.PLAYING;
+
+            /*
+             * A korong továbbra is áll.
+             * Az első ütés indítja el.
+             */
+            puck.setVelocity(
+                    0f,
+                    0f
+            );
+        }
+    }
+
+
 
     public void setBottomMalletPosition(float x, float y) {
         float previousX = bottomMallet.getX();
@@ -157,19 +192,20 @@ public class GameEngine {
         );
     }
 
-    private void resetAfterGoal(GoalResult goalResult) {
-        resetPositions();
-
-        if (goalResult == GoalResult.TOP_GOAL) {
-            startPuck(
-                    400f,
-                    300f
-            );
-        } else if (goalResult == GoalResult.BOTTOM_GOAL) {
-            startPuck(
-                    -400f,
-                    -300f
-            );
-        }
+    public boolean isCountdownActive() {
+        return gameState == GameState.COUNTDOWN;
     }
+
+    public int getCountdownNumber() {
+        if (!isCountdownActive()) {
+            return 0;
+        }
+
+        return Math.max(
+                1,
+                (int) Math.ceil(countdownRemaining)
+        );
+    }
+
+
 }

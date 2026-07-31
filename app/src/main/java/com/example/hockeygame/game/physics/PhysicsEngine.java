@@ -102,17 +102,26 @@ public class PhysicsEngine {
          * Ha a korong már távolodik az ütőtől,
          * nem fordítjuk meg még egyszer.
          */
-        if (velocityAlongNormal >= 0f) {
-            return;
-        }
 
         float newVelocityX =
-                puck.getVelocityX()
-                        - 2f * velocityAlongNormal * normalX;
+                puck.getVelocityX();
 
         float newVelocityY =
-                puck.getVelocityY()
-                        - 2f * velocityAlongNormal * normalY;
+                puck.getVelocityY();
+
+        if (velocityAlongNormal < 0f) {
+            newVelocityX =
+                    puck.getVelocityX()
+                            - 2f
+                            * velocityAlongNormal
+                            * normalX;
+
+            newVelocityY =
+                    puck.getVelocityY()
+                            - 2f
+                            * velocityAlongNormal
+                            * normalY;
+        }
 
         float malletInfluence = 18f;
 
