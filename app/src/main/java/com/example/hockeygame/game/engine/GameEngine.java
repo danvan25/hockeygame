@@ -4,6 +4,7 @@ import com.example.hockeygame.game.model.Mallet;
 import com.example.hockeygame.game.model.Puck;
 import com.example.hockeygame.game.model.Score;
 import com.example.hockeygame.game.physics.PhysicsEngine;
+import com.example.hockeygame.game.rules.GameRules;
 
 public class GameEngine {
 
@@ -17,6 +18,10 @@ public class GameEngine {
     private final PhysicsEngine physicsEngine;
     private float fieldMargin;
 
+    private float goalWidth;
+    private final GameRules gameRules;
+
+
     public GameEngine(
             Puck puck,
             Mallet topMallet,
@@ -28,6 +33,7 @@ public class GameEngine {
         this.bottomMallet = bottomMallet;
         this.score = score;
         this.physicsEngine = new PhysicsEngine();
+        this.gameRules = new GameRules(score);
     }
 
     public Puck getPuck() {
@@ -49,11 +55,13 @@ public class GameEngine {
     public void setFieldSize(
             int width,
             int height,
-            float margin
+            float margin,
+            float goalWidth
     ) {
         this.fieldWidth = width;
         this.fieldHeight = height;
         this.fieldMargin = margin;
+        this.goalWidth = goalWidth;
     }
 
     public void resetPositions() {
@@ -97,8 +105,11 @@ public class GameEngine {
                 fieldWidth,
                 fieldHeight,
                 fieldMargin,
+                goalWidth,
                 deltaTime
         );
+
+        gameRules.update(puck);
     }
 
     public void setBottomMalletPosition(float x, float y) {

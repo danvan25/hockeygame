@@ -47,12 +47,6 @@ public class GameView extends View {
     private static final float SENSOR_DEAD_ZONE = 1.5f;
     private static final float MALLET_SMOOTHING = 0.18f;
 
-    /*
-     * Az ütő maximális mozgási sebessége pixel/másodpercben.
-     * Ha még gyors, később csökkenthetjük.
-     */
-    private static final float MALLET_MAX_SPEED = 550f;
-
     public GameView(Context context) {
         this(context, null);
     }
@@ -88,7 +82,7 @@ public class GameView extends View {
         debugTextPaint.setTextSize(42f);
         debugTextPaint.setAntiAlias(true);
         debugTextPaint.setStyle(Paint.Style.FILL);
-        //------------------------
+
         linePaint.setColor(
                 ContextCompat.getColor(
                         getContext(),
@@ -222,11 +216,11 @@ public class GameView extends View {
     }
 
     private void initializeGameEngine(int width, int height) {
-        float puckRadius =
-                Math.min(width, height) * 0.038f;
+        float goalWidth = width * 0.38f;
 
-        float malletRadius =
-                Math.min(width, height) * 0.065f;
+        float puckRadius = Math.min(width, height) * 0.038f;
+
+        float malletRadius = Math.min(width, height) * 0.065f;
 
         Puck puck = new Puck(puckRadius);
 
@@ -245,7 +239,8 @@ public class GameView extends View {
         gameEngine.setFieldSize(
                 width,
                 height,
-                FIELD_MARGIN
+                FIELD_MARGIN,
+                goalWidth
         );
         gameEngine.resetPositions();
         gameEngine.startPuck(400f,300f);

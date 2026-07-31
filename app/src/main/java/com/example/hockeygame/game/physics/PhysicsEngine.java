@@ -12,6 +12,7 @@ public class PhysicsEngine {
             float fieldWidth,
             float fieldHeight,
             float fieldMargin,
+            float goalWidth,
             float deltaTime
     ) {
         movePuck(puck, deltaTime);
@@ -20,7 +21,8 @@ public class PhysicsEngine {
                 puck,
                 fieldWidth,
                 fieldHeight,
-                fieldMargin
+                fieldMargin,
+                goalWidth
         );
 
         handleMalletCollision(puck, topMallet);
@@ -148,8 +150,19 @@ public class PhysicsEngine {
             Puck puck,
             float fieldWidth,
             float fieldHeight,
-            float fieldMargin
+            float fieldMargin,
+            float goalWidth
     ) {
+        float goalLeft =
+                (fieldWidth - goalWidth) / 2f;
+
+        float goalRight =
+                goalLeft + goalWidth;
+
+        boolean puckInsideGoalOpening =
+                puck.getX() >= goalLeft
+                        && puck.getX() <= goalRight;
+
         float radius = puck.getRadius();
 
         float minimumX = fieldMargin + radius;
@@ -160,7 +173,11 @@ public class PhysicsEngine {
         float maximumY =
                 fieldHeight - fieldMargin - radius;
 
+        /*
+         * Bal fal
+         */
         if (puck.getX() < minimumX) {
+
             puck.setPosition(
                     minimumX,
                     puck.getY()
@@ -170,7 +187,13 @@ public class PhysicsEngine {
                     Math.abs(puck.getVelocityX()),
                     puck.getVelocityY()
             );
-        } else if (puck.getX() > maximumX) {
+        }
+
+        /*
+         * Jobb fal
+         */
+        else if (puck.getX() > maximumX) {
+
             puck.setPosition(
                     maximumX,
                     puck.getY()
@@ -182,7 +205,9 @@ public class PhysicsEngine {
             );
         }
 
-        if (puck.getY() < minimumY) {
+        if (!puckInsideGoalOpening
+                && puck.getY() < minimumY) {
+
             puck.setPosition(
                     puck.getX(),
                     minimumY
@@ -192,7 +217,9 @@ public class PhysicsEngine {
                     puck.getVelocityX(),
                     Math.abs(puck.getVelocityY())
             );
-        } else if (puck.getY() > maximumY) {
+        } else if (!puckInsideGoalOpening
+                && puck.getY() > maximumY) {
+
             puck.setPosition(
                     puck.getX(),
                     maximumY
