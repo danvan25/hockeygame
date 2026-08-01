@@ -2,13 +2,15 @@ package com.example.hockeygame.activity;
 
 import android.os.Bundle;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.hockeygame.game.model.ArenaType;
 import com.example.hockeygame.game.view.GameView;
 import com.example.hockeygame.R;
 import com.example.hockeygame.game.model.Score;
+import android.view.View;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -36,7 +38,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
+        hideSystemBars();
         initializeViews();
         readIntentData();
         initializeGame();
@@ -45,7 +47,7 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        hideSystemBars();
         textViewScore.post(scoreUpdater);
     }
 
@@ -54,6 +56,15 @@ public class GameActivity extends AppCompatActivity {
         textViewScore.removeCallbacks(scoreUpdater);
 
         super.onPause();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        if (hasFocus) {
+            hideSystemBars();
+        }
     }
 
     private void updateScoreText() {
@@ -131,6 +142,31 @@ public class GameActivity extends AppCompatActivity {
     private void initializeGame() {
         gameView.setArenaType(arenaType);
         updateScoreText();
+    }
+
+    private void hideSystemBars() {
+        WindowCompat.setDecorFitsSystemWindows(
+                getWindow(),
+                false
+        );
+
+        View decorView =
+                getWindow().getDecorView();
+
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(
+                        getWindow(),
+                        decorView
+                );
+
+        controller.hide(
+                WindowInsetsCompat.Type.systemBars()
+        );
+
+        controller.setSystemBarsBehavior(
+                WindowInsetsControllerCompat
+                        .BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        );
     }
 
 }
