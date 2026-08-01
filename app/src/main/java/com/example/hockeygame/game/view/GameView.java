@@ -288,9 +288,14 @@ public class GameView extends View {
             float deltaTime =
                     (currentTimeNanos - lastFrameTimeNanos)
                             / 1_000_000_000f;
+
             deltaTime = Math.min(deltaTime, 0.05f);
+
             gameEngine.update(deltaTime);
-            updateBottomMalletFromSensor();
+
+            if (!gameEngine.isCountdownActive()) {
+                updateBottomMalletFromSensor();
+            }
         }
 
         lastFrameTimeNanos = currentTimeNanos;

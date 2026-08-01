@@ -77,10 +77,6 @@ public class PhysicsEngine {
         float normalX = differenceX / distance;
         float normalY = differenceY / distance;
 
-        /*
-         * Eltoljuk a korongot az ütő felületére,
-         * hogy ne maradjon beleragadva.
-         */
         float correctedX =
                 mallet.getX()
                         + normalX * minimumDistance;
@@ -97,11 +93,6 @@ public class PhysicsEngine {
         float velocityAlongNormal =
                 puck.getVelocityX() * normalX
                         + puck.getVelocityY() * normalY;
-
-        /*
-         * Ha a korong már távolodik az ütőtől,
-         * nem fordítjuk meg még egyszer.
-         */
 
         float newVelocityX =
                 puck.getVelocityX();
