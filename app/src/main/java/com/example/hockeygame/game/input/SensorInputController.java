@@ -7,35 +7,23 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 public class SensorInputController implements SensorEventListener {
+    private static final float RAD_TO_DEG = (float) (180.0 / Math.PI);
+    private static final float SMOOTHING_FACTOR = 0.85f;
+    private final SensorManager sensorManager;
+    private final Sensor rotationVectorSensor;
+    private final Listener listener;
+    private final float[] rotationMatrix = new float[9];
+    private final float[] orientationValues = new float[3];
+    private float centerPitch;
+    private float centerRoll;
+    private float smoothedPitch;
+    private float smoothedRoll;
+    private boolean calibrated;
+    private boolean firstSensorValueReceived;
 
     public interface Listener {
         void onTiltChanged(float tiltX, float tiltY);
     }
-
-    private static final float RAD_TO_DEG =
-            (float) (180.0 / Math.PI);
-
-    /*
-     * Minél nagyobb, annál simább,
-     * de annál lassabban reagál.
-     */
-    private static final float SMOOTHING_FACTOR = 0.85f;
-
-    private final SensorManager sensorManager;
-    private final Sensor rotationVectorSensor;
-    private final Listener listener;
-
-    private final float[] rotationMatrix = new float[9];
-    private final float[] orientationValues = new float[3];
-
-    private float centerPitch;
-    private float centerRoll;
-
-    private float smoothedPitch;
-    private float smoothedRoll;
-
-    private boolean calibrated;
-
     public SensorInputController(
             Context context,
             Listener listener
@@ -96,35 +84,31 @@ public class SensorInputController implements SensorEventListener {
                 orientationValues
         );
 
-        float pitch =
-                orientationValues[1] * RAD_TO_DEG;
+        float pitch = orientationValues[1] * RAD_TO_DEG;
+        float roll = orientationValues[2] * RAD_TO_DEG;
 
-        float roll =
-                orientationValues[2] * RAD_TO_DEG;
+        if (!firstSensorValueReceived) {
+            smoothedPitch = pitch;
+            smoothedRoll = roll;
 
-        smoothedPitch =
-                SMOOTHING_FACTOR * smoothedPitch
-                        + (1f - SMOOTHING_FACTOR) * pitch;
+            centerPitch = pitch;
+            centerRoll = roll;
 
-        smoothedRoll =
-                SMOOTHING_FACTOR * smoothedRoll
-                        + (1f - SMOOTHING_FACTOR) * roll;
-
-        /*
-         * Az első stabilabb mérés legyen
-         * az alaphelyzet.
-         */
-        if (!calibrated) {
-            centerPitch = smoothedPitch;
-            centerRoll = smoothedRoll;
             calibrated = true;
+            firstSensorValueReceived = true;
+
+            if (listener != null) {
+                listener.onTiltChanged(0f, 0f);
+            }
+
+            return;
         }
 
-        float relativePitch =
-                smoothedPitch - centerPitch;
+        smoothedPitch = SMOOTHING_FACTOR * smoothedPitch + (1f - SMOOTHING_FACTOR) * pitch;
+        smoothedRoll = SMOOTHING_FACTOR * smoothedRoll + (1f - SMOOTHING_FACTOR) * roll;
 
-        float relativeRoll =
-                smoothedRoll - centerRoll;
+        float relativePitch = smoothedPitch - centerPitch;
+        float relativeRoll = smoothedRoll - centerRoll;
 
         if (listener != null) {
             listener.onTiltChanged(
@@ -139,6 +123,8 @@ public class SensorInputController implements SensorEventListener {
             Sensor sensor,
             int accuracy
     ) {
-        // Egyelőre nincs vele teendőnk.
+        // Egyelőre nincs vele teendő.
     }
+
+
 }

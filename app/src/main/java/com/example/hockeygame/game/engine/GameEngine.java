@@ -22,6 +22,7 @@ public class GameEngine {
     private static final float COUNTDOWN_DURATION_SECONDS = 3f;
     private GameState gameState = GameState.COUNTDOWN;
     private float countdownRemaining = COUNTDOWN_DURATION_SECONDS;
+    private static final float MALLET_VELOCITY_SMOOTHING = 0.40f;
 
     public GameEngine(
             Puck puck,
@@ -91,25 +92,21 @@ public class GameEngine {
         );
     }
 
-    public void startPuck(float velocityX, float velocityY) {
-        puck.setVelocity(
-                velocityX,
-                velocityY
+    public void startPuck(float velocityX, float velocityY)
+        {
+            puck.setVelocity(velocityX, velocityY
         );
     }
 
     public void startCountdown() {
         resetPositions();
-
-        countdownRemaining =
-                COUNTDOWN_DURATION_SECONDS;
-
-        gameState =
-                GameState.COUNTDOWN;
+        countdownRemaining = COUNTDOWN_DURATION_SECONDS;
+        gameState = GameState.COUNTDOWN;
     }
 
     public void update(float deltaTime) {
-        if (gameState == GameState.COUNTDOWN) {
+        if (gameState == GameState.COUNTDOWN)
+        {
             updateCountdown(deltaTime);
             return;
         }
@@ -126,13 +123,7 @@ public class GameEngine {
         );
 
         GoalResult goalResult =
-                gameRules.update(
-                        puck,
-                        fieldWidth,
-                        fieldHeight,
-                        fieldMargin,
-                        goalWidth
-                );
+                gameRules.update(puck, fieldWidth, fieldHeight, fieldMargin, goalWidth);
 
         if (goalResult != GoalResult.NONE) {
             startCountdown();
@@ -150,15 +141,10 @@ public class GameEngine {
              * A korong továbbra is áll.
              * Az első ütés indítja el.
              */
-            puck.setVelocity(
-                    0f,
-                    0f
+            puck.setVelocity(0f, 0f
             );
         }
     }
-
-
-
     public void setBottomMalletPosition(float x, float y) {
         float previousX = bottomMallet.getX();
         float previousY = bottomMallet.getY();
@@ -171,24 +157,26 @@ public class GameEngine {
         float minimumY = fieldHeight / 2f + radius;
         float maximumY = fieldHeight - fieldMargin - radius;
 
-        float clampedX = Math.max(
-                minimumX,
-                Math.min(x, maximumX)
+        float clampedX = Math.max(minimumX, Math.min(x, maximumX)
         );
 
-        float clampedY = Math.max(
-                minimumY,
-                Math.min(y, maximumY)
+        float clampedY = Math.max(minimumY, Math.min(y, maximumY)
         );
 
-        bottomMallet.setPosition(
-                clampedX,
-                clampedY
+        float measuredVelocityX = clampedX - previousX;
+        float measuredVelocityY = clampedY - previousY;
+
+        float smoothedVelocityX = bottomMallet.getVelocityX() + (measuredVelocityX
+                - bottomMallet.getVelocityX()) * MALLET_VELOCITY_SMOOTHING;
+
+        float smoothedVelocityY =
+                bottomMallet.getVelocityY() + (measuredVelocityY - bottomMallet.getVelocityY())
+                        * MALLET_VELOCITY_SMOOTHING;
+
+        bottomMallet.setPosition(clampedX, clampedY
         );
 
-        bottomMallet.setVelocity(
-                clampedX - previousX,
-                clampedY - previousY
+        bottomMallet.setVelocity(smoothedVelocityX, smoothedVelocityY
         );
     }
 
@@ -201,11 +189,8 @@ public class GameEngine {
             return 0;
         }
 
-        return Math.max(
-                1,
-                (int) Math.ceil(countdownRemaining)
+        return Math.max(1, (int) Math.ceil(countdownRemaining)
         );
     }
-
 
 }

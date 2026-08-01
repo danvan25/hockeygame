@@ -4,7 +4,36 @@ import com.example.hockeygame.game.model.Puck;
 import com.example.hockeygame.game.model.Mallet;
 import com.example.hockeygame.game.model.Puck;
 public class PhysicsEngine {
+    private static final float MAX_PUCK_SPEED = 1600f;
+    private static final float PUCK_DAMPING_PER_SECOND = 0.35f;
+    private static final float PUCK_STOP_SPEED = 12f;
 
+    private void limitPuckSpeed(Puck puck) {
+        float velocityX = puck.getVelocityX();
+        float velocityY = puck.getVelocityY();
+
+        float speedSquared =
+                velocityX * velocityX
+                        + velocityY * velocityY;
+
+        float maximumSpeedSquared =
+                MAX_PUCK_SPEED * MAX_PUCK_SPEED;
+
+        if (speedSquared <= maximumSpeedSquared) {
+            return;
+        }
+
+        float speed =
+                (float) Math.sqrt(speedSquared);
+
+        float scale =
+                MAX_PUCK_SPEED / speed;
+
+        puck.setVelocity(
+                velocityX * scale,
+                velocityY * scale
+        );
+    }
     public void updatePuck(
             Puck puck,
             Mallet topMallet,
@@ -27,6 +56,9 @@ public class PhysicsEngine {
 
         handleMalletCollision(puck, topMallet);
         handleMalletCollision(puck, bottomMallet);
+
+        limitPuckSpeed(puck);
+        applyPuckDamping(puck, deltaTime);
     }
 
     private void handleMalletCollision(
@@ -114,7 +146,7 @@ public class PhysicsEngine {
                             * normalY;
         }
 
-        float malletInfluence = 18f;
+        float malletInfluence = 35f;
 
         newVelocityX +=
                 mallet.getVelocityX() * malletInfluence;
@@ -230,5 +262,41 @@ public class PhysicsEngine {
                     -Math.abs(puck.getVelocityY())
             );
         }
+    }
+
+    private void applyPuckDamping(
+            Puck puck,
+            float deltaTime
+    ) {
+        float dampingFactor =
+                (float) Math.exp(
+                        -PUCK_DAMPING_PER_SECOND * deltaTime
+                );
+
+        float velocityX =
+                puck.getVelocityX() * dampingFactor;
+
+        float velocityY =
+                puck.getVelocityY() * dampingFactor;
+
+        float speedSquared =
+                velocityX * velocityX
+                        + velocityY * velocityY;
+
+        if (speedSquared
+                < PUCK_STOP_SPEED * PUCK_STOP_SPEED) {
+
+            puck.setVelocity(
+                    0f,
+                    0f
+            );
+
+            return;
+        }
+
+        puck.setVelocity(
+                velocityX,
+                velocityY
+        );
     }
 }

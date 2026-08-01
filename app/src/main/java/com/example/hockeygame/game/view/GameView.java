@@ -20,7 +20,7 @@ import com.example.hockeygame.game.model.Score;
 import com.example.hockeygame.game.input.SensorInputController;
 
 public class GameView extends View {
-    private final Paint debugTextPaint = new Paint();
+    //private final Paint debugTextPaint = new Paint();
     private static final float FIELD_MARGIN = 12f;
     private static final float FIELD_CORNER_RADIUS = 30f;
     private final Paint fieldPaint;
@@ -37,7 +37,9 @@ public class GameView extends View {
     private SensorInputController sensorInputController;
     private float sensorTiltX;
     private float sensorTiltY;
-    private static final float MAX_TILT_DEGREES = 18f;
+    //private static final float MAX_TILT_DEGREES = 18f;
+    private static final float MAX_HORIZONTAL_TILT_DEGREES = 10f;
+    private static final float MAX_VERTICAL_TILT_DEGREES = 12f;
     private static final float SENSOR_DEAD_ZONE = 1.5f;
     private static final float MALLET_SMOOTHING = 0.18f;
     private final Paint countdownPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -73,10 +75,10 @@ public class GameView extends View {
     }
 
     private void initializePaints() {
-        debugTextPaint.setColor(Color.WHITE);
+        /*debugTextPaint.setColor(Color.WHITE);
         debugTextPaint.setTextSize(42f);
         debugTextPaint.setAntiAlias(true);
-        debugTextPaint.setStyle(Paint.Style.FILL);
+        debugTextPaint.setStyle(Paint.Style.FILL);*/
 
         linePaint.setColor(
                 ContextCompat.getColor(
@@ -307,7 +309,7 @@ public class GameView extends View {
         drawPuck(canvas);
         drawCountdown(canvas);
 
-        canvas.drawText(
+        /*canvas.drawText(
                 "Tilt X: " + String.format("%.1f", sensorTiltX),
                 40f,
                 80f,
@@ -319,7 +321,7 @@ public class GameView extends View {
                 40f,
                 125f,
                 debugTextPaint
-        );
+        );*/
 
         postInvalidateOnAnimation();
     }
@@ -576,13 +578,13 @@ public class GameView extends View {
         float tiltY = applyDeadZone(sensorTiltY);
 
         float normalizedX = clamp(
-                tiltX / MAX_TILT_DEGREES,
+                tiltX / MAX_HORIZONTAL_TILT_DEGREES,
                 -1f,
                 1f
         );
 
         float normalizedY = clamp(
-                tiltY / MAX_TILT_DEGREES,
+                tiltY / MAX_VERTICAL_TILT_DEGREES,
                 -1f,
                 1f
         );
