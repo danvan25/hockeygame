@@ -34,13 +34,13 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editTextEmail"
+            android:id="@+id/editTextUsername"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="48dp"
             android:background="@drawable/input_background"
-            android:hint="Email address"
-            android:inputType="textEmailAddress"
+            android:hint="Username"
+            android:inputType="text|textNoSuggestions"
             android:maxLines="1"
             android:textColor="@color/text_primary"
             android:textColorHint="@color/text_secondary"
